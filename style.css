@@ -3,6 +3,7 @@
 body {
     color: hsl(210,20%,95%);
     background: hsl(210,20%,15%);
+    font-family: monospace;
 }
 header {
     padding: 10px;
@@ -14,7 +15,7 @@ h1{
     
 }
 h2{
-    font-size: 1.5em;   
+    font-size: 1.5em;
 }
 div {
     padding: 10px;

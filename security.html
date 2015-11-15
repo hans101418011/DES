@@ -15,7 +15,7 @@
 </header>
 <div>
     <form id="inputkey">
-        <input type="text" maxlength="7" required>
+        <input type="text" maxlength="7" value="science" required>
         <input type="submit" value="Create">
         <input type="reset" value="Reset">
     </form>
@@ -27,15 +27,79 @@
 </section>
     
 <script type="text/javascript">
+    var kpTable = [56,48,40,32,24,16, 8, 0,57,49,41,33,25,17,
+                    9, 1,58,50,42,34,26,18,10, 2,59,51,43,35,
+                   62,54,46,38,30,22,14, 6,61,53,45,37,29,21,
+                   13, 5,60,52,44,36,28,20,12, 4,27,19,11, 3];
+    
     $("form").submit(function(event){
-        
         var patt = /^[a-zA-Z0-9]{7}$/;
         var okey=$("input:first").val();
         console.log(okey);
-        
+        $("section").before("<p>"+okey+"</p>");
         if(patt.test(okey)){
             console.log("ok");
-            $("section").after(okey);
+            var keyHex = [];
+            var c = [];
+            var keyBit = "";
+            for(i=0;i<7;i++){
+                for(j=0;j<2;j++){
+                    keyHex.push(char2ascii(okey[i]).substr(j,1));
+                    
+                }
+                $("section").before(char2ascii(okey[i]) + " ");
+            }
+            console.log(keyHex);
+            for(i=0;i< keyHex.length ; i++){
+                keyBit += padLeft(hex2bit(keyHex[i]),4);
+                c.push(padLeft(hex2bit(keyHex[i]),4));
+            }
+            console.log(c);
+            console.log(keyBit);
+            $("section").before("<pre>"+ c +"</pre>");
+            var oddParity = 0;
+            var keyBit64 = "";
+            for(i=0;i<keyBit.length;i++){
+                keyBit64 += keyBit[i];
+                oddParity += parseInt(keyBit[i]);
+                if((i+1)%7 == 0){
+                    if( oddParity%2 == 0){
+                        keyBit64 += "1";
+                    }else{
+                        keyBit64 += "0";
+                    }
+                    oddParity = 0;
+                }
+            }
+            var pkeyBit64 = "";
+            for(i=0;i<64;i+=8){
+                pkeyBit64 += keyBit64.toString().substr(i,8)+" ";
+            }
+            $("section").before("<p>"+ pkeyBit64 +"</p>");
+            console.log(keyBit64);
+            console.log(pkeyBit64);
+            
+            var keyKp = "";
+            for(i=0;i<56;i++){
+                keyKp += keyBit64[kpTable[i]];
+            }
+            var printString = "";
+            for(i=0;i<56;i+=8){
+                printString += keyKp.toString().substr(i,8)+" ";
+            }
+            $("section").before("<p>"+ printString +"</p>");
+            
+            var keyLeft0 = "";
+            var keyRight0 = "";
+            for(i=0;i<32;i++){
+                keyLeft0 += keyKp[i];
+                keyRight0 += keyKp[32+i]; 
+            }
+            var keyLeft1 = shiftLeft(keyLeft0,1);
+            console.log(keyLeft1);
+            
+            
+            
         }else{
             alert("Input text error !!!");
             return true;
@@ -43,11 +107,31 @@
         return false;
     })
     
-    var x="C".charCodeAt(0).toString(16);
-    //alert(x);
-
-    function Char2Ascii2Bin(){
-
+    
+    function char2ascii(char1){
+        return char1.charCodeAt(0).toString(16);
+    }
+    function hex2bit(hex1){
+        return parseInt(hex1,16).toString(2);
+    }
+    function padLeft(str,len){
+        str = ''+str;
+        if(str.length < len){
+            return padLeft("0" + str ,len);
+        }else{
+            return str;
+        }
+    }
+    function shiftLeft(keyPart,time){
+        if(time>0){
+            var temp = keyPart[0];
+            keyPart = keyPart << 1;
+            keyPart[keyPart.length-1] = temp.toString();
+            time -= 1;
+            return shiftLeft(keyPart,time);
+        }else{
+            return keyPart;
+        }
     }
 </script>
     <!-- HansChen Design -->
