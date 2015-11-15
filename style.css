@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+body {
+    color: hsl(210,20%,95%);
+    background: hsl(210,20%,15%);
+}
+header {
+    padding: 10px;
+    background: hsla(190,60%,70%,0.2);
+    text-shadow: 1px 1px 3px #999;
+}
+h1{
+    font-size: 2em;
+    
+}
+h2{
+    font-size: 1.5em;   
+}
+div {
+    padding: 10px;
+}
+section {
+    padding: 10px;
+}

@@ -1,11 +1,55 @@
 <!doctype html>
 <html>
 <head>
-    <title></title>
-
+    <meta charset="utf-8" />
+    <title>DES加密 with Javascript</title>
+    <link rel="stylesheet" href="reset.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src="jquery-2.1.4.min.js"></script>
+    
 </head>
 <body>
+<header>
+    <h1>DES加密 with Javascript</h1>
+    <h2>By 101418011 HansChen</h2>
+</header>
+<div>
+    <form id="inputkey">
+        <input type="text" maxlength="7" required>
+        <input type="submit" value="Create">
+        <input type="reset" value="Reset">
+    </form>
+</div>
+<section>
+    <article>
     
+    </article>
+</section>
     
+<script type="text/javascript">
+    $("form").submit(function(event){
+        
+        var patt = /^[a-zA-Z0-9]{7}$/;
+        var okey=$("input:first").val();
+        console.log(okey);
+        
+        if(patt.test(okey)){
+            console.log("ok");
+            $("section").after(okey);
+        }else{
+            alert("Input text error !!!");
+            return true;
+        }
+        return false;
+    })
+    
+    var x="C".charCodeAt(0).toString(16);
+    //alert(x);
+
+    function Char2Ascii2Bin(){
+
+    }
+</script>
+    <!-- HansChen Design -->
 </body>
 </html>
