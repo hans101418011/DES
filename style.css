@@ -4,22 +4,53 @@ body {
     color: hsl(210,20%,95%);
     background: hsl(210,20%,15%);
     font-family: monospace;
+    
 }
 header {
     padding: 10px;
     background: hsla(190,60%,70%,0.2);
     text-shadow: 1px 1px 3px #999;
-}
-h1{
-    font-size: 2em;
     
 }
-h2{
-    font-size: 1.5em;
+h1 {
+    font-size: 3em;
+    display: inline-block;
 }
-div {
+h2 {
+    font-size: 1.5em;
+    display: inline-block;
+}
+div#input {
     padding: 10px;
+    font-size: 1.2em;
+    font-family: sans-serif;
+    font-weight: bold;
 }
 section {
     padding: 10px;
+}
+table {
+    font-family: monospace;
+    margin: 10px;
+}
+tr {
+    border-width: 1px;
+    border-color: hsla(210,10%,90%,0.7);
+    border-style: none none solid none;
+}
+td {
+    padding: 4px;
+    text-align: left;
+}
+td:first-child {
+    text-align: center;
+    vertical-align: middle;
+}
+table div {
+    margin: 0;
+    text-align: center;
+    display: inline-block;
+}
+table div:nth-child(even) {
+    margin: 0 6px 0 0; 
 }

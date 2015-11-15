@@ -13,50 +13,123 @@
     <h1>DES加密 with Javascript</h1>
     <h2>By 101418011 HansChen</h2>
 </header>
-<div>
-    <form id="inputkey">
-        <input type="text" maxlength="7" value="science" required>
+<div  id="input">
+    <form>
+        <label>Key:<input type="text" maxlength="7" value="science" required></label>
+        <label>Plaintext:<input type="text" value="security" required></label>
         <input type="submit" value="Create">
         <input type="reset" value="Reset">
     </form>
 </div>
 <section>
-    <article>
-    
-    </article>
+    <table id="createKey">
+        <thead>
+            <tr><td>原始密碼</td><td></td></tr>
+        </thead>
+        <tbody>
+            <tr id="originalKey">
+                <td>原始金鑰</td><td></td>
+            </tr>
+            <tr id="odd">
+                <td>奇同位元</td><td></td>
+            </tr>
+            <tr id="KP">
+                <td>KP</td><td></td>
+            </tr>
+            <tr id="KL1">
+                <td>KL1</td><td></td>
+            </tr>
+            <tr id="KR1">
+                <td>KR1</td><td></td>
+            </tr>
+            <tr id="keyR1">
+                <td>回合金鑰1</td><td></td>
+            </tr>
+            <tr id="keyR2">
+                <td>回合金鑰2</td><td></td>
+            </tr>
+            <tr id="keyR3">
+                <td>回合金鑰3</td><td></td>
+            </tr>
+            <tr id="keyR4">
+                <td>回合金鑰4</td><td></td>
+            </tr>
+            <tr id="keyR5">
+                <td>回合金鑰5</td><td></td>
+            </tr>
+            <tr id="keyR6">
+                <td>回合金鑰6</td><td></td>
+            </tr>
+            <tr id="keyR7">
+                <td>回合金鑰7</td><td></td>
+            </tr>
+            <tr id="keyR8">
+                <td>回合金鑰8</td><td></td>
+            </tr>
+            <tr id="keyR9">
+                <td>回合金鑰9</td><td></td>
+            </tr>
+            <tr id="keyR10">
+                <td>回合金鑰10</td><td></td>
+            </tr>
+            <tr id="keyR11">
+                <td>回合金鑰11</td><td></td>
+            </tr>
+            <tr id="keyR12">
+                <td>回合金鑰12</td><td></td>
+            </tr>
+            <tr id="keyR13">
+                <td>回合金鑰13</td><td></td>
+            </tr>
+            <tr id="keyR14">
+                <td>回合金鑰14</td><td></td>
+            </tr>
+            <tr id="keyR15">
+                <td>回合金鑰15</td><td></td>
+            </tr>
+            <tr id="keyR16">
+                <td>回合金鑰16</td><td></td>
+            </tr>
+        </tbody>
+    </table>
 </section>
-    
 <script type="text/javascript">
     var kpTable = [56,48,40,32,24,16, 8, 0,57,49,41,33,25,17,
                     9, 1,58,50,42,34,26,18,10, 2,59,51,43,35,
                    62,54,46,38,30,22,14, 6,61,53,45,37,29,21,
                    13, 5,60,52,44,36,28,20,12, 4,27,19,11, 3];
+    var cpTable = [13,16,10,23, 0, 4, 2,27,14, 5,20, 9,
+                   22,18,11, 3,25, 7,15, 6,26,19,12, 1,
+                   40,51,30,36,46,54,29,39,50,44,32,47,
+                   43,48,38,55,33,52,45,41,49,35,28,31];
+    var shiftLTable = [1,2,4,6,8,10,12,14,15,17,19,21,23,25,27,28];
+    
     
     $("form").submit(function(event){
         var patt = /^[a-zA-Z0-9]{7}$/;
         var okey=$("input:first").val();
-        console.log(okey);
-        $("section").before("<p>"+okey+"</p>");
+
         if(patt.test(okey)){
-            console.log("ok");
+            $("thead td:last").html(okey);
             var keyHex = [];
             var c = [];
             var keyBit = "";
             for(i=0;i<7;i++){
                 for(j=0;j<2;j++){
                     keyHex.push(char2ascii(okey[i]).substr(j,1));
-                    
                 }
-                $("section").before(char2ascii(okey[i]) + " ");
             }
-            console.log(keyHex);
             for(i=0;i< keyHex.length ; i++){
                 keyBit += padLeft(hex2bit(keyHex[i]),4);
                 c.push(padLeft(hex2bit(keyHex[i]),4));
             }
-            console.log(c);
-            console.log(keyBit);
-            $("section").before("<pre>"+ c +"</pre>");
+            for(i=0;i<c.length;i++){
+                $("#originalKey td:last").append("<div>"+byte2hex(c[i]) + "<br>" +c[i]+"</div>");
+            }
+            
+            /*
+            *   odd
+            */
             var oddParity = 0;
             var keyBit64 = "";
             for(i=0;i<keyBit.length;i++){
@@ -71,35 +144,74 @@
                     oddParity = 0;
                 }
             }
-            var pkeyBit64 = "";
-            for(i=0;i<64;i+=8){
-                pkeyBit64 += keyBit64.toString().substr(i,8)+" ";
+            for(i=0;i<64;i+=4){
+                var temp = keyBit64.toString().substr(i,4);
+                $("#odd td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>");
             }
-            $("section").before("<p>"+ pkeyBit64 +"</p>");
-            console.log(keyBit64);
-            console.log(pkeyBit64);
             
+            /*
+            *   KP
+            */
             var keyKp = "";
             for(i=0;i<56;i++){
                 keyKp += keyBit64[kpTable[i]];
             }
-            var printString = "";
-            for(i=0;i<56;i+=8){
-                printString += keyKp.toString().substr(i,8)+" ";
+            for(i=0;i<56;i+=4){
+                var temp = keyKp.toString().substr(i,4);
+                $("#KP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
             }
-            $("section").before("<p>"+ printString +"</p>");
             
+            /*
+            *   Key Round 1
+            */
             var keyLeft0 = "";
             var keyRight0 = "";
-            for(i=0;i<32;i++){
+            for(i=0;i<28;i++){
                 keyLeft0 += keyKp[i];
-                keyRight0 += keyKp[32+i]; 
+                keyRight0 += keyKp[28+i]; 
             }
             var keyLeft1 = shiftLeft(keyLeft0,1);
-            console.log(keyLeft1);
+            var keyRight1 = shiftLeft(keyRight0,1);
+            var keyLR = "";
+            for(i=0;i<28;i++){
+                keyLR += keyLeft1[i];
+            }
+            for(i=0;i<28;i++){
+                keyLR += keyRight1[i];
+            }
+            var keyRound1=cp(keyLR);
+            var kR1Byte = bit2byteArray(keyRound1);
+            var kR1Hex = byteArr2hexArr(kR1Byte);
+            
+            for(i=0;i<keyLeft1.length;i+=4){
+                var temp = keyLeft1.toString().substr(i,4);
+                $("#KL1 td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
+            }
+            for(i=0;i<keyRight1.length;i+=4){
+                var temp = keyRight1.toString().substr(i,4);
+                $("#KR1 td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
+            }
+            for(i=0;i<kR1Byte.length;i+=1){
+                //$("#keyR1 td:last").append("<div>"+kR1Hex[i] + "<br>" +kR1Byte[i]+"</div>")
+            }
+            
+            
+            //  Key Round
+            var keyRound = [];
+            for(var round=1;round<=16;round++){
+                keyRound.push(getRoundKey(round,keyKp));
+                var kRByte = bit2byteArray(keyRound[keyRound.length-1]);
+                for(j=0;j<kRByte.length;j+=1){
+                    $("#keyR"+round+" td:last").append("<div>"+byte2hex(kRByte[j]) + "<br>" +kRByte[j]+"</div>")
+                }
+            }
             
             
             
+            
+            
+            
+           
         }else{
             alert("Input text error !!!");
             return true;
@@ -114,6 +226,24 @@
     function hex2bit(hex1){
         return parseInt(hex1,16).toString(2);
     }
+    function byte2hex(byte1){
+        return parseInt(byte1,2).toString(16);
+    }
+    function bit2byteArray(bit1){
+        var arrByte = [];
+        for(i=0;i < bit1.length;i+=4){
+            arrByte.push(bit1.toString().substr(i,4));
+        }
+        return arrByte;
+    }
+    function byteArr2hexArr(byte1){
+        var arrHex = [];
+        for(i=0;i < byte1.length;i+=1){
+            arrHex.push(byte2hex(byte1[i]));
+        }
+        return arrHex;
+    }
+    
     function padLeft(str,len){
         str = ''+str;
         if(str.length < len){
@@ -123,15 +253,44 @@
         }
     }
     function shiftLeft(keyPart,time){
-        if(time>0){
-            var temp = keyPart[0];
-            keyPart = keyPart << 1;
-            keyPart[keyPart.length-1] = temp.toString();
+        if(time > 0 && time < 28){
+            var tempX = keyPart[0];
+            var temp = "";
+            for(i=0;i<27;i++){
+                temp += keyPart[i+1].toString();
+            }
+            temp += tempX;
             time -= 1;
-            return shiftLeft(keyPart,time);
+            return shiftLeft(temp,time);
         }else{
             return keyPart;
         }
+    }
+    function cp(tkeyLR){
+        var temp = "";
+        for(i=0;i<48;i++){
+            temp += tkeyLR[cpTable[i]];
+        }
+        return temp;
+    }
+    function getRoundKey(time,KP){
+        var keyL = "";
+        var keyR = "";
+        for(i=0;i<28;i++){
+            keyL += KP[i];
+            keyR += KP[28+i]; 
+        }
+        //console.log();
+        var keyLeft = shiftLeft(keyL,parseInt(shiftLTable[time-1]));
+        var keyRight = shiftLeft(keyR,parseInt(shiftLTable[time-1]));
+        var keyLR = "";
+        for(i=0;i<28;i++){
+            keyLR += keyLeft[i];
+        }
+        for(i=0;i<28;i++){
+            keyLR += keyRight[i];
+        }
+        return cp(keyLR);
     }
 </script>
     <!-- HansChen Design -->
