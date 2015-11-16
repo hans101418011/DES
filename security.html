@@ -15,16 +15,16 @@
 </header>
 <div  id="input">
     <form>
-        <label>Key:<input type="text" maxlength="7" value="science" required></label>
-        <label>Plaintext:<input type="text" value="security" required></label>
+        <label>Key:<input id="key" type="text" maxlength="7" value="science" required></label>
+        <label>Plaintext:<input id="plaintext" type="text" value="security" required></label>
         <input type="submit" value="Create">
         <input type="reset" value="Reset">
     </form>
 </div>
-<section>
+<section id="output">
     <table id="createKey">
         <thead>
-            <tr><td>原始密碼</td><td></td></tr>
+            <tr><td>Key</td><td></td></tr>
         </thead>
         <tbody>
             <tr id="originalKey">
@@ -92,6 +92,23 @@
             </tr>
         </tbody>
     </table>
+    <table id="encrypt">
+        <thead><tr><td>Plaintext</td><td></td></tr></thead>
+        <tbody>
+            <tr id="ptext">
+                <td>明文</td><td></td>
+            </tr>
+            <tr id="IP">
+                <td>IP</td><td></td>
+            </tr>
+            <tr>
+                <td></td><td></td>
+            </tr>
+            <tr id="FP">
+                <td>FP</td><td></td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 <script type="text/javascript">
     var kpTable = [56,48,40,32,24,16, 8, 0,57,49,41,33,25,17,
@@ -104,13 +121,19 @@
                    43,48,38,55,33,52,45,41,49,35,28,31];
     var shiftLTable = [1,2,4,6,8,10,12,14,15,17,19,21,23,25,27,28];
     
+    var ipTable = [57,49,41,33,25,17, 9, 1,59,51,43,35,27,19,11, 3,
+                   61,53,45,37,29,21,13, 5,63,55,47,39,31,23,15, 7,
+                   56,48,40,32,24,16, 8, 0,58,50,42,34,26,18,10, 2,
+                   60,52,44,36,28,20,12, 4,62,54,46,38,30,22,14, 6];
+    
     
     $("form").submit(function(event){
         var patt = /^[a-zA-Z0-9]{7}$/;
-        var okey=$("input:first").val();
+        var okey=$("input#key").val();
+        
 
         if(patt.test(okey)){
-            $("thead td:last").html(okey);
+            $("#createKey thead td:last").html(okey);
             var keyHex = [];
             var c = [];
             var keyBit = "";
@@ -205,6 +228,58 @@
                     $("#keyR"+round+" td:last").append("<div>"+byte2hex(kRByte[j]) + "<br>" +kRByte[j]+"</div>")
                 }
             }
+            
+            
+            /*
+            var htmlTable = ''<table><thead><tr><td>明文：</td><td></td></tr></thead><tbody>
+            <tr>
+                <td></td><td></td>
+            </tr>
+            <tr>
+                <td></td><td></td>
+            </tr>
+            <tr>
+                <td></td><td></td>
+            </tr>
+            <tr>
+                <td></td><td></td>
+            </tr>
+        </tbody>
+    </table>';
+    */
+            //$("section#output").append('')
+            var plaintext=$("input#plaintext").val();
+            
+            $("#encrypt thead td:last").html(plaintext);
+            var textHex = [];
+            var textByte = [];
+            var textBit = "";
+            for(i=0;i<plaintext.length;i++){
+                for(j=0;j<2;j++){
+                    textHex.push(char2ascii(plaintext[i]).substr(j,1));
+                }
+            }
+            for(i=0;i< textHex.length ; i++){
+                textBit += padLeft(hex2bit(textHex[i]),4);
+                textByte.push(padLeft(hex2bit(textHex[i]),4));
+            }
+            for(i=0;i<textByte.length;i++){
+                $("#ptext td:last").append("<div>"+byte2hex(textByte[i])+"<br>"+textByte[i]+"</div>");
+            }
+            
+            /*
+            *   IP
+            */
+            var textIP = "";
+            for(i=0;i<textBit.length;i++){
+                textIP += textBit[ipTable[i]];
+            }
+            for(i=0;i<textIP.length;i+=4){
+                var temp = textIP.toString().substr(i,4);
+                $("#IP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
+            }
+            
+            
             
             
             

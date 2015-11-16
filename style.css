@@ -31,11 +31,11 @@ section {
 }
 table {
     font-family: monospace;
-    margin: 10px;
+    margin: 10px 10px 20px 10px;
 }
 tr {
     border-width: 1px;
-    border-color: hsla(210,10%,90%,0.7);
+    border-color: hsla(210,10%,90%,1);
     border-style: none none solid none;
 }
 td {
