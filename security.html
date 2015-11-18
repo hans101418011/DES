@@ -172,8 +172,15 @@
     sbox[7][1] = [ 1,15,13, 8,10, 3, 7, 4,12, 5, 6,11, 0,14, 9, 2];
     sbox[7][2] = [ 7,11, 4, 1, 9,12,14, 2, 0, 6,10,13,15, 3, 5, 8];
     sbox[7][3] = [ 2, 1,14, 7, 4,10, 8,13,15,12, 9, 0, 3, 5, 6,11];
-    
     //console.log(sbox);
+    
+    var pboxTable = [15, 6,19,20,28,11,27,16, 0,14,22,25, 4,17,30, 9,
+                      1, 7,23,13,31,26, 2, 8,18,12,29, 5,21,10, 3,24];
+    var fpTable = [39, 7,47,15,55,23,63,31,38, 6,46,14,54,22,62,30,
+                   37, 5,45,13,53,21,61,29,36, 4,44,12,52,20,60,28,
+                   35, 3,43,11,51,19,59,27,34, 2,42,10,50,18,58,26,
+                   33, 1,41, 9,49,17,57,25,32, 0,40,8,48,16,56,24];
+    
     
     $("form").submit(function(event){
         var patt = /^[a-zA-Z0-9]{7}$/;
@@ -351,15 +358,34 @@
             var text_sbox = "";
             for(var i=0;i<8;i++){
                 var sboxIndex = str2index(textR_EP_K.toString().substr(i*6,6));
-                console.log("sboxIndex: " + sboxIndex);
-                console.log("sbox: " + sbox[i][sboxIndex[0]][sboxIndex[1]]);
+                //console.log("sboxIndex: " + sboxIndex);
+                //console.log("sbox: " + sbox[i][sboxIndex[0]][sboxIndex[1]]);
                 text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
-                console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
+                //console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
             }
-            console.log("text_sbox: " +text_sbox);
+            console.log("text_sbox:   " +text_sbox);
+            
+            var text_pbox = pbox(text_sbox);
+            console.log("text_pbox:   " +text_pbox);
+            var textRight_n = "";
+            for(var i=0;i<text_pbox.length;i++){
+                textRight_n += text_pbox[i] ^ textLeft[i];
+            }
+            console.log("textLeft:    "+textLeft);
+            console.log("textRight_n: "+textRight_n);
+            console.log("textLeft_n:  "+textLeft_n);
+            var textRound1 = textLeft_n + textRight_n;
+            
+            console.log("textRound1: "+textRound1);
+            
+            console.log(byteArr2hexArr(bit2byteArray(textRound1)));
             
             
-           
+            
+            
+            
+            
+            
         }else{
             alert("Input text error !!!");
             return true;
@@ -453,6 +479,13 @@
         var s2 = str.toString().substr(1,4)
         temp.push(parseInt(s1,2).toString(10));
         temp.push(parseInt(s2,2).toString(10));
+        return temp;
+    }
+    function pbox(sbox){
+        var temp = "";
+        for(var i=0;i<sbox.length;i++){
+            temp += sbox[pboxTable[i]];
+        }
         return temp;
     }
 </script>
