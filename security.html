@@ -283,7 +283,7 @@
                     $("#keyR"+round+" td:last").append("<div>"+byte2hex(kRByte[j]) + "<br>" +kRByte[j]+"</div>")
                 }
             }
-            
+            console.log(keyRound);
             
             /*
             var htmlTable = ''<table><thead><tr><td>明文：</td><td></td></tr></thead><tbody>
@@ -335,52 +335,18 @@
             }
             console.log("IP:"+textIP);
             /*
-            *   
+            *
             */
-            var textLeft = "";
-            var textRight = "";
-            for(var i=0;i<textIP.length/2;i++){
-                textLeft += textIP[i];
-                textRight += textIP[i+textIP.length/2];
+            var ciphertext = [];
+            console.log("keyRound:"+keyRound[1]);
+            ciphertext.push(encryption(textIP,keyRound[1]));
+            
+            for(var round=2;round<=16;round++){
+                console.log("keyRound[round]:"+keyRound[round]);
+                ciphertext.push(encryption(ciphertext[ciphertext.length],keyRound[round]));
             }
-            //console.log("L:"+textLeft);
-            //console.log("R:"+textRight);
-            var textLeft_n = textRight;
-            var textR_EP = ep(textRight);
-            var textR_EP_K = "";
-            for(var i=0;i<textR_EP.length;i++){
-                textR_EP_K += textR_EP[i] ^ keyRound[0][i];
-            }
-            //console.log(keyRound[0]);
-            //console.log(textR_EP);
-            console.log(textR_EP_K);
             
-            var text_sbox = "";
-            for(var i=0;i<8;i++){
-                var sboxIndex = str2index(textR_EP_K.toString().substr(i*6,6));
-                //console.log("sboxIndex: " + sboxIndex);
-                //console.log("sbox: " + sbox[i][sboxIndex[0]][sboxIndex[1]]);
-                text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
-                //console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
-            }
-            console.log("text_sbox:   " +text_sbox);
-            
-            var text_pbox = pbox(text_sbox);
-            console.log("text_pbox:   " +text_pbox);
-            var textRight_n = "";
-            for(var i=0;i<text_pbox.length;i++){
-                textRight_n += text_pbox[i] ^ textLeft[i];
-            }
-            console.log("textLeft:    "+textLeft);
-            console.log("textRight_n: "+textRight_n);
-            console.log("textLeft_n:  "+textLeft_n);
-            var textRound1 = textLeft_n + textRight_n;
-            
-            console.log("textRound1: "+textRound1);
-            
-            console.log(byteArr2hexArr(bit2byteArray(textRound1)));
-            
-            
+            console.log("ciphertext:"+ciphertext);
             
             
             
@@ -487,6 +453,50 @@
             temp += sbox[pboxTable[i]];
         }
         return temp;
+    }
+    function encryption(inputText,key){
+        var textLeft = "";
+        var textRight = "";
+        for(var i=0;i<inputText.toString().length/2;i++){
+            textLeft += inputText[i];
+            textRight += inputText[i+inputText.toString().length/2];
+        }
+        //console.log("L:"+textLeft);
+        //console.log("R:"+textRight);
+        var textLeft_n = textRight;
+        var textR_EP = ep(textRight);
+        var textR_EP_K = "";
+        for(var i=0;i<textR_EP.length;i++){
+            textR_EP_K += textR_EP[i] ^ key[i];
+        }
+        //console.log(keyRound[0]);
+        //console.log(textR_EP);
+        console.log(textR_EP_K);
+
+        var text_sbox = "";
+        for(var i=0;i<8;i++){
+            var sboxIndex = str2index(textR_EP_K.toString().substr(i*6,6));
+            //console.log("sboxIndex: " + sboxIndex);
+            //console.log("sbox: " + sbox[i][sboxIndex[0]][sboxIndex[1]]);
+            text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
+            //console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
+        }
+        console.log("text_sbox:   " +text_sbox);
+
+        var text_pbox = pbox(text_sbox);
+        console.log("text_pbox:   " +text_pbox);
+        var textRight_n = "";
+        for(var i=0;i<text_pbox.length;i++){
+            textRight_n += text_pbox[i] ^ textLeft[i];
+        }
+        console.log("textLeft:    "+textLeft);
+        console.log("textRight_n: "+textRight_n);
+        console.log("textLeft_n:  "+textLeft_n);
+        var roundCiphertext = textLeft_n + textRight_n;
+        console.log("textRound1: "+roundCiphertext);
+
+        console.log(byteArr2hexArr(bit2byteArray(roundCiphertext)));
+        return roundCiphertext;
     }
 </script>
     <!-- HansChen Design -->
