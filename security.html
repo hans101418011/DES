@@ -101,9 +101,6 @@
             <tr id="IP">
                 <td>IP</td><td></td>
             </tr>
-            <tr>
-                <td></td><td></td>
-            </tr>
             <tr id="FP">
                 <td>FP</td><td></td>
             </tr>
@@ -128,7 +125,7 @@
     var epTable = [31, 0, 1, 2, 3, 4, 3, 4, 5, 6, 7, 8,
                     7, 8, 9,10,11,12,11,12,13,14,15,16,
                    15,16,17,18,19,20,19,20,21,22,23,24,
-                   23,24,25,26,27,28,27,28,29,30,31, 1];
+                   23,24,25,26,27,28,27,28,29,30,31, 0];
     
     var sbox=[];
     sbox = [0,1,2,3,4,5,6,7]
@@ -334,21 +331,46 @@
                 $("#IP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
             }
             console.log("IP:"+textIP);
+            
+            
             /*
-            *
+            *   round ciphertext
             */
             var ciphertext = [];
-            console.log("keyRound:"+keyRound[1]);
-            ciphertext.push(encryption(textIP,keyRound[1]));
+            ciphertext.push(encryption(textIP,keyRound[0]));
             
-            for(var round=2;round<=16;round++){
-                console.log("keyRound[round]:"+keyRound[round]);
-                ciphertext.push(encryption(ciphertext[ciphertext.length],keyRound[round]));
+            for(var round=1;round<16;round++){    
+                ciphertext.push(encryption(ciphertext[ciphertext.length-1],keyRound[round]));
+            }
+
+            
+            
+            for(var i=0;i<16;i++){
+                
+                var htmltext = "";
+                htmltext += "<tr><td>第"+(i+1)+"回合密文</td><td>";
+                var tempArray = bit2byteArray(ciphertext[i]);
+                for(var j=0;j<tempArray.length;j++){
+                    htmltext += "<div>"+byte2hex(tempArray[j])+"<br>"+tempArray[j]+"</div>";
+                }
+                htmltext+="</td></tr>";
+                $("#FP").before(htmltext);
             }
             
-            console.log("ciphertext:"+ciphertext);
             
             
+            /*
+            *   FP
+            */
+            var fptext = "";
+            for(var i=0;i<ciphertext[15].length;i++){
+                fptext += ciphertext[15][fpTable[i]];
+            }
+            
+            for(i=0;i<fptext.length;i+=4){
+                var temp = fptext.toString().substr(i,4);
+                $("#FP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>");
+            }
             
             
             
@@ -455,23 +477,24 @@
         return temp;
     }
     function encryption(inputText,key){
+        console.log("inputText:"+inputText);
+        console.log("key:"+key);
         var textLeft = "";
         var textRight = "";
-        for(var i=0;i<inputText.toString().length/2;i++){
+        for(var i=0;i<inputText.length/2;i++){
             textLeft += inputText[i];
-            textRight += inputText[i+inputText.toString().length/2];
+            textRight += inputText[i+inputText.length/2];
         }
-        //console.log("L:"+textLeft);
-        //console.log("R:"+textRight);
+        console.log("L:  "+textLeft + " , R:  "+textRight);
         var textLeft_n = textRight;
         var textR_EP = ep(textRight);
         var textR_EP_K = "";
         for(var i=0;i<textR_EP.length;i++){
             textR_EP_K += textR_EP[i] ^ key[i];
         }
-        //console.log(keyRound[0]);
-        //console.log(textR_EP);
-        console.log(textR_EP_K);
+        console.log("key:        "+key);
+        console.log("textR_EP:   "+textR_EP);
+        console.log("textR_EP_K: "+textR_EP_K);
 
         var text_sbox = "";
         for(var i=0;i<8;i++){
@@ -481,21 +504,20 @@
             text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
             //console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
         }
-        console.log("text_sbox:   " +text_sbox);
+        //console.log("text_sbox:   " +text_sbox);
 
         var text_pbox = pbox(text_sbox);
-        console.log("text_pbox:   " +text_pbox);
+        //console.log("text_pbox:   " +text_pbox);
         var textRight_n = "";
         for(var i=0;i<text_pbox.length;i++){
             textRight_n += text_pbox[i] ^ textLeft[i];
         }
-        console.log("textLeft:    "+textLeft);
-        console.log("textRight_n: "+textRight_n);
-        console.log("textLeft_n:  "+textLeft_n);
+        //console.log("textLeft:    "+textLeft);
+        console.log("Ln: "+byteArr2hexArr(bit2byteArray(textLeft_n)) + " , Rn: "+byteArr2hexArr(bit2byteArray(textRight_n)));
         var roundCiphertext = textLeft_n + textRight_n;
-        console.log("textRound1: "+roundCiphertext);
+        //console.log("textRound1: "+roundCiphertext);
 
-        console.log(byteArr2hexArr(bit2byteArray(roundCiphertext)));
+        console.log("textRound1: " + byteArr2hexArr(bit2byteArray(roundCiphertext)));
         return roundCiphertext;
     }
 </script>
