@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+@media print {
+    body {
+        color: hsl(210,0%,0%);
+    }
+    
+}
+    
