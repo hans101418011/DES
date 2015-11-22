@@ -103,6 +103,7 @@ spen.subtext {
 @-moz-document url-prefix() { 
     table {
         font-family: "Lucida Console",monospace;
+        font-size: 0.9em;
     }
     div#input label input[type=text] {
         font-family: "Lucida Console",monospace;
