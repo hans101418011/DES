@@ -18,8 +18,8 @@
     <form>
         <label>Key:<input id="key" type="text" maxlength="7" value="science" required></label>
         <label>Plaintext:<input id="plaintext" type="text" value="security" required></label>
-        <input type="submit" value="Create">
-        <input type="reset" value="Reset">
+        <input class="hButton" type="submit" value="Create">
+        <a class="hButton" href="./security.html">Reset</a>
     </form>
 </div>
 <section id="output">
@@ -183,17 +183,23 @@
     
     $("form").submit(function(event){
         var patt = /^[a-zA-Z0-9]{7}$/;
-        var okey=$("input#key").val();
+        var patt2 = /^[a-zA-Z0-9]{8}$/;
+        var inputKey = $("input#key").val();
+        var plaintext = $("input#plaintext").val();
         
-
-        if(patt.test(okey)){
-            $("#createKey thead td:last").html(okey);
+        var in1 = patt.test(inputKey);
+        var in2 = patt2.test(plaintext);
+        if(in1 && in2){
+            
+            $("section#output").show(1000);
+            
+            $("#createKey thead td:last").html(inputKey);
             var keyHex = [];
             var c = [];
             var keyBit = "";
             for(i=0;i<7;i++){
                 for(j=0;j<2;j++){
-                    keyHex.push(char2ascii(okey[i]).substr(j,1));
+                    keyHex.push(char2ascii(inputKey[i]).substr(j,1));
                 }
             }
             for(i=0;i< keyHex.length ; i++){
@@ -282,7 +288,7 @@
                     $("#keyR"+round+" td:last").append("<div>"+byte2hex(kRByte[j]) + "<br>" +kRByte[j]+"</div>")
                 }
             }
-            console.log(keyRound);
+            
             
             /*
             var htmlTable = ''<table><thead><tr><td>明文：</td><td></td></tr></thead><tbody>
@@ -302,7 +308,7 @@
     </table>';
     */
             //$("section#output").append('')
-            var plaintext=$("input#plaintext").val();
+            
             
             $("#encrypt thead td:last").html(plaintext);
             var textHex = [];
@@ -332,7 +338,6 @@
                 var temp = textIP.toString().substr(i,4);
                 $("#IP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>")
             }
-            console.log("IP:"+textIP);
             
             
             /*
@@ -376,7 +381,14 @@
             
             
         }else{
-            alert("Input text error !!!");
+            var errorMsg="";
+            if(!in1){
+                errorMsg += "Input Key error !! \n";
+            }
+            if(!in2){
+                errorMsg += "Input Plaintext error !! \n";
+            }
+            alert(errorMsg);
             return true;
         }
         return false;
