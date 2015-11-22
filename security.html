@@ -346,25 +346,28 @@
             var ciphertext = [];
             ciphertext.push(encryption(textIP,keyRound[0]));
             
-            for(var round=1;round<16;round++){    
-                ciphertext.push(encryption(ciphertext[ciphertext.length-1],keyRound[round]));
+            var htmltext = "";
+            htmltext += '<tr class="eText1"><td>第1回合密文</td><td>';
+            var tempArray = bit2byteArray(ciphertext[0]);
+            for(var j=0;j<tempArray.length;j++){
+                htmltext += "<div>"+byte2hex(tempArray[j])+"<br>"+tempArray[j]+"</div>";
             }
-
+            htmltext+="</td></tr>";
+            $("#FP").before(htmltext);
             
             
-            for(var i=0;i<16;i++){
+            for(var round=1;round<16;round++){
+                ciphertext.push(encryption(ciphertext[ciphertext.length-1],keyRound[round]));
                 
                 var htmltext = "";
-                htmltext += "<tr><td>第"+(i+1)+"回合密文</td><td>";
-                var tempArray = bit2byteArray(ciphertext[i]);
+                htmltext += '<tr class="eText'+(round+1)+'"><td>第'+(round+1)+'回合密文</td><td>';
+                var tempArray = bit2byteArray(ciphertext[round]);
                 for(var j=0;j<tempArray.length;j++){
                     htmltext += "<div>"+byte2hex(tempArray[j])+"<br>"+tempArray[j]+"</div>";
                 }
                 htmltext+="</td></tr>";
                 $("#FP").before(htmltext);
             }
-            
-            
             
             /*
             *   FP
@@ -489,7 +492,6 @@
         return temp;
     }
     function encryption(inputText,key){
-
         var textLeft = "";
         var textRight = "";
         for(var i=0;i<inputText.length/2;i++){
@@ -499,20 +501,28 @@
         var textLeft_n = textRight;
         var textR_EP = ep(textRight);
         var textR_EP_K = "";
+        $("#FP").before('<tr class="tleft"><td>R<spen class="subtext">i-1</spen></td><td><div>'+textRight+"</div></td></tr>");
+        $("#FP").before('<tr class="tleft"><td>EP</td><td><div>'+textR_EP+"</div></td></tr>");
+        
         for(var i=0;i<textR_EP.length;i++){
             textR_EP_K += textR_EP[i] ^ key[i];
         }
+        $("#FP").before('<tr class="tleft"><td>Key</td><td><div>'+key+"</div></td></tr>");
+        $("#FP").before('<tr class="tleft"><td>EP xor Key</td><td><div>'+textR_EP_K+"</div></td></tr>");
         var text_sbox = "";
         for(var i=0;i<8;i++){
             var sboxIndex = str2index(textR_EP_K.toString().substr(i*6,6));
             text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
         }
-
+        $("#FP").before('<tr class="tleft"><td>S-Box</td><td><div>'+text_sbox+"</div></td></tr>");
         var text_pbox = pbox(text_sbox);
+        $("#FP").before('<tr class="tleft"><td>P-Box</td><td><div>'+text_pbox+"</div></td></tr>");
         var textRight_n = "";
         for(var i=0;i<text_pbox.length;i++){
             textRight_n += text_pbox[i] ^ textLeft[i];
         }
+        $("#FP").before('<tr class="tleft"><td>L<spen class="subtext">i-1</spen></td><td><div>'+textLeft+"</div></td></tr>");
+        $("#FP").before('<tr class="tleft"><td>L<spen class="subtext">i-1</spen> xor P-Box</td><td><div>'+textRight_n+"</div></td></tr>");
         var roundCiphertext = textLeft_n + textRight_n;
         return roundCiphertext;
     }
