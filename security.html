@@ -5,6 +5,7 @@
     <title>DES加密 with Javascript</title>
     <link rel="stylesheet" href="reset.css" type="text/css" />
     <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="stylesheet" media="print" href="style_printer.css" type="text/css" />
     <script src="jquery-2.1.4.min.js"></script>
     
 </head>
@@ -92,6 +93,7 @@
             </tr>
         </tbody>
     </table>
+    <p style="page-break-after:always"></p>
     <table id="encrypt">
         <thead><tr><td>Plaintext</td><td></td></tr></thead>
         <tbody>
@@ -366,7 +368,6 @@
             for(var i=0;i<ciphertext[15].length;i++){
                 fptext += ciphertext[15][fpTable[i]];
             }
-            
             for(i=0;i<fptext.length;i+=4){
                 var temp = fptext.toString().substr(i,4);
                 $("#FP td:last").append("<div>"+byte2hex(temp) + "<br>" +temp+"</div>");
@@ -442,7 +443,6 @@
             keyL += KP[i];
             keyR += KP[28+i]; 
         }
-        //console.log();
         var keyLeft = shiftLeft(keyL,parseInt(shiftLTable[time-1]));
         var keyRight = shiftLeft(keyR,parseInt(shiftLTable[time-1]));
         var keyLR = "";
@@ -477,47 +477,31 @@
         return temp;
     }
     function encryption(inputText,key){
-        console.log("inputText:"+inputText);
-        console.log("key:"+key);
+
         var textLeft = "";
         var textRight = "";
         for(var i=0;i<inputText.length/2;i++){
             textLeft += inputText[i];
             textRight += inputText[i+inputText.length/2];
         }
-        console.log("L:  "+textLeft + " , R:  "+textRight);
         var textLeft_n = textRight;
         var textR_EP = ep(textRight);
         var textR_EP_K = "";
         for(var i=0;i<textR_EP.length;i++){
             textR_EP_K += textR_EP[i] ^ key[i];
         }
-        console.log("key:        "+key);
-        console.log("textR_EP:   "+textR_EP);
-        console.log("textR_EP_K: "+textR_EP_K);
-
         var text_sbox = "";
         for(var i=0;i<8;i++){
             var sboxIndex = str2index(textR_EP_K.toString().substr(i*6,6));
-            //console.log("sboxIndex: " + sboxIndex);
-            //console.log("sbox: " + sbox[i][sboxIndex[0]][sboxIndex[1]]);
             text_sbox += padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4);
-            //console.log("sbox: " + padLeft(parseInt(sbox[i][sboxIndex[0]][sboxIndex[1]],10).toString(2),4));
         }
-        //console.log("text_sbox:   " +text_sbox);
 
         var text_pbox = pbox(text_sbox);
-        //console.log("text_pbox:   " +text_pbox);
         var textRight_n = "";
         for(var i=0;i<text_pbox.length;i++){
             textRight_n += text_pbox[i] ^ textLeft[i];
         }
-        //console.log("textLeft:    "+textLeft);
-        console.log("Ln: "+byteArr2hexArr(bit2byteArray(textLeft_n)) + " , Rn: "+byteArr2hexArr(bit2byteArray(textRight_n)));
         var roundCiphertext = textLeft_n + textRight_n;
-        //console.log("textRound1: "+roundCiphertext);
-
-        console.log("textRound1: " + byteArr2hexArr(bit2byteArray(roundCiphertext)));
         return roundCiphertext;
     }
 </script>
